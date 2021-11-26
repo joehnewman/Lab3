@@ -17,4 +17,7 @@ check_state(_,Value,Start,_,neg(Goal)):-
    not(member(Goal,L)).
 
 %And rule
+check_state(_,Value,Start,_,and(A,B)):-
+    member([Start,L],Value),
+    member(A,L), member(B,L).
 
