@@ -47,7 +47,3 @@ check(_, L, S, [], and(F,G)) :-
 %EG
 %EF
 %AF
-
-
-1 simple case get to take an imput file and rtn true
-2 get to check simplest of things such as single node model loop or something
