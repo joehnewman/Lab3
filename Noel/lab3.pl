@@ -21,3 +21,12 @@ check_state(_,Value,Start,_,and(A,B)):-
     member([Start,L],Value),
     member(A,L), member(B,L).
 
+%or rule1
+check_state(_,Value,Start,_,or(A,_)):-
+    member([Start,L],Value),
+    member(A,L).
+
+check_state(_,Value,Start,_,or(_,B)):-
+    member([Start,L],Value),
+    member(B,L).
+
