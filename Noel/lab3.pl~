@@ -35,7 +35,7 @@ check_state(_,Value,Start,_,or(_,B)):-
 check_state(Nextstate,Value,Start,[],ax(A)):-
     acheck(Nextstate,Value,Start,A).
 
-%support metoder
+%support metoder---------------------------
 acheck(Nextstate,Value,Start,Goal):-
     member([Start,Statelist],Nextstate),
     atocheck(Nextstate,Value,Start,Goal,Statelist).
@@ -49,7 +49,7 @@ atocheck(Nextstate,Value,Start,Goal,[H|T]):-
 
 echeck(Nextstate,Value,Start,Goal):-
     member([Start,Statelist],Nextstate),
-    echeck(Nextstate,Value,Start,Goal,Statelist).
+    echeck(Nextstate,Value,Start,Goal).
 
 
 

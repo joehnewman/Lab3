@@ -44,16 +44,11 @@ atocheck(_,_,_,_,[]).
 atocheck(Nextstate,Value,Start,Goal,[H|T]):-
     check_state(Nextstate,Value,H,[],Goal),
     atocheck(Nextstate,Value,Start,Goal,T).
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 echeck(Nextstate,Value,Start,Goal):-
     member([Start,Statelist],Nextstate),
-    echeck(Nextstate,Value,Start,Goal).
+    etocheck(Nextstate,Value,Start,Goal,Statelist).
 
 
 
-=======
->>>>>>> parent of 2f479fc (EX rule implemented)
-=======
->>>>>>> parent of 2f479fc (EX rule implemented)
+
