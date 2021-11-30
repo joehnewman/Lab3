@@ -35,6 +35,11 @@ check_state(_,Value,Start,_,or(_,B)):-
 check_state(Nextstate,Value,Start,[],ax(A)):-
     acheck(Nextstate,Value,Start,A).
 
+%ex rule
+check_state(Nextstate,Value,Start,[],ex(A)):-
+    echeck(Nextstate,Value,Start,A).
+
+
 %support metoder---------------------------
 acheck(Nextstate,Value,Start,Goal):-
     member([Start,Statelist],Nextstate),
@@ -44,3 +49,12 @@ atocheck(_,_,_,_,[]).
 atocheck(Nextstate,Value,Start,Goal,[H|T]):-
     check_state(Nextstate,Value,H,[],Goal),
     atocheck(Nextstate,Value,Start,Goal,T).
+
+echeck(Nextstate,Value,Start,Goal):-
+    member([Start,Statelist],Nextstate),
+    etocheck(Nextstate,Value,Start,Goal,Statelist).
+
+etocheck(Nextstate,Value,Start,Goal,[H|T]):-
+    check_state(Nextstate,Value,H,[],Goal);
+    etocheck(Nextstate,Value,Start,Goal,T).
+
