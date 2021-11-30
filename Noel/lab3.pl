@@ -2,8 +2,8 @@ verify(Input):-
     see(Input), read(Nextstate), read(Value), read(Start), read(Goal), seen,
     check(Nextstate,Value,Start,[],Goal).
 
-check(Nextstate,Value,Start,Prev,Goal):-
-    check_state(Nextstate,Value,Start,Prev,Goal).
+check(Nextstate,Value,Start,U,Goal):-
+    check_state(Nextstate,Value,Start,U,Goal).
 
 %--------------------------Regler check--------------------------
 %rule P sant om målet finns i nuvarande staten
@@ -33,28 +33,37 @@ check_state(_,Value,Start,_,or(_,B)):-
 
 %ax rule
 check_state(Nextstate,Value,Start,[],ax(A)):-
-    acheck(Nextstate,Value,Start,A).
+    acheck(Nextstate,Value,Start,[],A).
 
 %ex rule
 check_state(Nextstate,Value,Start,[],ex(A)):-
-    echeck(Nextstate,Value,Start,A).
+    echeck(Nextstate,Value,Start,[],A).
+
+%ag rule
+%Basecase
+check_state(Nextstate,Value,Start,U,ag(A)):-
+    member(Start,U).
+
+check_state(Nextstate,Value,Start,U,ag(A)):-
+    check_state(_,Value,Start,_,A),
+    acheck(Nextstate,Value,Start,[Start|U],A).
 
 
 %support metoder---------------------------
-acheck(Nextstate,Value,Start,Goal):-
+acheck(Nextstate,Value,Start,U,Goal):-
     member([Start,Statelist],Nextstate),
-    atocheck(Nextstate,Value,Start,Goal,Statelist).
+    atocheck(Nextstate,Value,Start,U,Goal,Statelist).
 %basecase
-atocheck(_,_,_,_,[]).
-atocheck(Nextstate,Value,Start,Goal,[H|T]):-
+atocheck(_,_,_,_,_,[]).
+atocheck(Nextstate,Value,Start,U,Goal,[H|T]):-
     check_state(Nextstate,Value,H,[],Goal),
-    atocheck(Nextstate,Value,Start,Goal,T).
+    atocheck(Nextstate,Value,Start,U,Goal,T).
 
-echeck(Nextstate,Value,Start,Goal):-
+echeck(Nextstate,Value,Start,U,Goal):-
     member([Start,Statelist],Nextstate),
-    etocheck(Nextstate,Value,Start,Goal,Statelist).
+    etocheck(Nextstate,Value,Start,U,Goal,Statelist).
 
-etocheck(Nextstate,Value,Start,Goal,[H|T]):-
+etocheck(Nextstate,Value,Start,U,Goal,[H|T]):-
     check_state(Nextstate,Value,H,[],Goal);
-    etocheck(Nextstate,Value,Start,Goal,T).
+    etocheck(Nextstate,Value,Start,U,Goal,T).
 
