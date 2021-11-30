@@ -51,10 +51,10 @@ atocheck(Nextstate,Value,Start,Goal,[H|T]):-
     atocheck(Nextstate,Value,Start,Goal,T).
 
 echeck(Nextstate,Value,Start,Goal):-
-    member([Start,Statelist],Nextstate),
-    etocheck(Nextstate,Value,Start,Goal,Statelist).
-etocheck(_,_,_,_,[]).
-etocheck(Nextstate,Value,Start,Goal,[H|T]):-
+    member([Start,[H|T]],Nextstate),
     check_state(Nextstate,Value,H,[],Goal);
     etocheck(Nextstate,Value,Start,Goal,T).
+
+etocheck(Nextstate,Value,Start,Goal,[H|T]):-
+        etocheck(Nextstate,Value,Start,Goal,T).
 
