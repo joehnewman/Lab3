@@ -18,26 +18,26 @@ check_state(_,Value,Start,_,neg(Goal)):-
    not(member(Goal,L)).
 
 %And rule
-check_state(_,Value,Start,_,and(A,B)):-
-    member([Start,L],Value),
-    member(A,L), member(B,L).
+check_state(Nextstate,Value,Start,U,and(A,B)):-
+    check_state(Nextstate,Value,Start,U,A),
+    check_state(Nextstate,Value,Start,U,B).
 
-%or rule1
-check_state(_,Value,Start,_,or(A,_)):-
-    member([Start,L],Value),
-    member(A,L).
-%or rule2
-check_state(_,Value,Start,_,or(_,B)):-
-    member([Start,L],Value),
-    member(B,L).
+%or rule
+check_state(Nextstate,Value,Start,U,or(A,B)):-
+    check_state(Nextstate,Value,Start,U,A);
+    check_state(Nextstate,Value,Start,U,B).
+
 
 %ax rule
 check_state(Nextstate,Value,Start,[],ax(A)):-
-    acheck(Nextstate,Value,Start,[],A).
+    member([Start,NeighborList],Nextstate),
+    acheck(Nextstate,Value,NeighborList,[],A).
 
 %ex rule
 check_state(Nextstate,Value,Start,[],ex(A)):-
-    echeck(Nextstate,Value,Start,[],A).
+    write(ex),
+     member([Start,NeighborList],Nextstate),
+    echeck(Nextstate,Value,NeighborList,[],A).
 
 %ag rule
 %Basecase
@@ -50,20 +50,14 @@ check_state(Nextstate,Value,Start,U,ag(A)):-
 
 
 %support metoder---------------------------
-acheck(Nextstate,Value,Start,U,Goal):-
-    member([Start,Statelist],Nextstate),
-    atocheck(Nextstate,Value,Start,U,Goal,Statelist).
+acheck(Nextstate,Value,[H|T],U,Goal):-
+   check_state(Nextstate,Value,H,U,Goal),
+    acheck(Nextstate,Value,T,U,Goal).
 %basecase
-atocheck(_,_,_,_,_,[]).
-atocheck(Nextstate,Value,Start,U,Goal,[H|T]):-
-    check_state(Nextstate,Value,H,[],Goal),
-    atocheck(Nextstate,Value,Start,U,Goal,T).
+acheck(_,_,[],_,_).
 
-echeck(Nextstate,Value,Start,U,Goal):-
-    member([Start,Statelist],Nextstate),
-    etocheck(Nextstate,Value,Start,U,Goal,Statelist).
 
-etocheck(Nextstate,Value,Start,U,Goal,[H|T]):-
-    check_state(Nextstate,Value,H,[],Goal);
-    etocheck(Nextstate,Value,Start,U,Goal,T).
-
+echeck(Nextstate,Value,[H|T],U,Goal):-
+    write(ec),
+    check_state(Nextstate,Value,H,U,Goal);
+    echeck(Nextstate,Value,T,U,Goal).
