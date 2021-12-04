@@ -8,7 +8,7 @@ check(Nextstate,Value,Start,U,Goal):-
 %--------------------------Regler check--------------------------
 %rule P sant om målet finns i nuvarande staten
 check_state(_,Value,Start,_,Goal):-
-   write(test),
+
    member([Start,L],Value),
    member(Goal,L).
 
@@ -45,9 +45,40 @@ check_state(Nextstate,Value,Start,U,ag(A)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,ag(A)):-
+    not(member(Start, U)), %viktig rad (om man har två states som pekar mot varandra ex [s0, [s1]],[s1,[s0]], så kommer det bli en oändlig loop. därför kollar man om current node inte finns med i listan för att kunna fortsätta beviset.)
     check_state(_,Value,Start,_,A),
-    acheck(Nextstate,Value,Start,[Start|U],A).
+    member([Start,NeighborList],Nextstate),
+    acheck(Nextstate,Value,NeighborList,[Start|U],ag(A)).
 
+%af
+check_state(Nextstate,Value,Start,U,af(A)):-
+    not(member(Start,U)),
+    check_state(Nextstate,Value,Start,U,A).
+
+check_state(Nextstate,Value,Start,U,af(A)):-
+   not(member(Start,U)),
+    member([Start,NeighborList],Nextstate),
+    acheck(Nextstate,Value,NeighborList,[Start|U],af(A)).
+
+%eg rule
+%Basecase
+check_state(Nextstate,Value,Start,U,eg(A)):-
+    member(Start,U).
+
+check_state(Nextstate,Value,Start,U,eg(A)):-
+    not(member(Start, U)),
+    check_state(_,Value,Start,_,A),
+    member([Start,NeighborList],Nextstate),
+    echeck(Nextstate,Value,NeighborList,[Start|U],eg(A)).
+%ef
+check_state(Nextstate,Value,Start,U,ef(A)):-
+    not(member(Start,U)),
+    check_state(Nextstate,Value,Start,U,A).
+
+check_state(Nextstate,Value,Start,U,ef(A)):-
+   not(member(Start,U)),
+    member([Start,NeighborList],Nextstate),
+    echeck(Nextstate,Value,NeighborList,[Start|U],ef(A)).
 
 %support metoder---------------------------
 acheck(Nextstate,Value,[H|T],U,Goal):-
@@ -56,6 +87,7 @@ acheck(Nextstate,Value,[H|T],U,Goal):-
 %basecase
 acheck(_,_,[],_,_).
 
+echeck(_,_,[],_,_).
 
 echeck(Nextstate,Value,[H|T],U,Goal):-
     write(ec),

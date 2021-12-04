@@ -45,19 +45,24 @@ check_state(Nextstate,Value,Start,U,ag(A)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,ag(A)):-
-    not(member(Start, U)), %viktig rad
+    not(member(Start, U)), %viktig rad (om man har två states som pekar mot varandra ex [s0, [s1]],[s1,[s0]], så kommer det bli en oändlig loop. därför kollar man om current node inte finns med i listan för att kunna fortsätta beviset.)
     check_state(_,Value,Start,_,A),
     member([Start,NeighborList],Nextstate),
     acheck(Nextstate,Value,NeighborList,[Start|U],ag(A)).
 
-%AF
+%af
 check_state(Nextstate,Value,Start,U,af(A)):-
+    not(member(Start,U)),
     check_state(Nextstate,Value,Start,U,A).
 
-
 check_state(Nextstate,Value,Start,U,af(A)):-
+   not(member(Start,U)),
     member([Start,NeighborList],Nextstate),
     acheck(Nextstate,Value,NeighborList,[Start|U],af(A)).
+
+
+
+
 
 %eg rule
 %Basecase
@@ -65,13 +70,19 @@ check_state(Nextstate,Value,Start,U,eg(A)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,eg(A)):-
+    not(member(Start, U)),
     check_state(_,Value,Start,_,A),
     member([Start,NeighborList],Nextstate),
     echeck(Nextstate,Value,NeighborList,[Start|U],eg(A)).
+%ef
+check_state(Nextstate,Value,Start,U,ef(A)):-
+    not(member(Start,U)),
+    check_state(Nextstate,Value,Start,U,A).
 
-
-
-
+check_state(Nextstate,Value,Start,U,ef(A)):-
+   not(member(Start,U)),
+    member([Start,NeighborList],Nextstate),
+    echeck(Nextstate,Value,NeighborList,[Start|U],ef(A)).
 
 %support metoder---------------------------
 acheck(Nextstate,Value,[H|T],U,Goal):-

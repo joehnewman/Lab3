@@ -1,22 +1,20 @@
 verify(Input):-
     see(Input), read(Nextstate), read(Value), read(Start), read(Goal), seen,
-    check(Nextstate,Value,Start,[],Goal).
+    check(Nextstate,Value,Start,[],Goal), !.
 
 check(Nextstate,Value,Start,U,Goal):-
     check_state(Nextstate,Value,Start,U,Goal).
 
 %--------------------------Regler check--------------------------
 %rule P sant om målet finns i nuvarande staten
-check_state(_,Value,Start,_,Goal):-
-
+check_state(_,Value,Start,[],Goal):-
    member([Start,L],Value),
    member(Goal,L).
 
 %rule neg(p) sant om målet inte finns i den nuvarande staten
-check_state(_,Value,Start,_,neg(Goal)):-
+check_state(_,Value,Start,[],neg(Goal)):-
    member([Start,L],Value),
-   not(member(Goal,L)).
-
+   not( member(Goal,L)).
 %And rule
 check_state(Nextstate,Value,Start,U,and(A,B)):-
     check_state(Nextstate,Value,Start,U,A),
@@ -29,60 +27,64 @@ check_state(Nextstate,Value,Start,U,or(A,B)):-
 
 
 %ax rule
-check_state(Nextstate,Value,Start,[],ax(A)):-
+check_state(Nextstate,Value,Start,U,ax(A)):-
     member([Start,NeighborList],Nextstate),
-    acheck(Nextstate,Value,NeighborList,[],A).
+    acheck(Nextstate,Value,NeighborList,U,A).
 
 %ex rule
 check_state(Nextstate,Value,Start,[],ex(A)):-
-    write(ex),
-     member([Start,NeighborList],Nextstate),
+    member([Start,NeighborList],Nextstate),
     echeck(Nextstate,Value,NeighborList,[],A).
 
 %ag rule
 %Basecase
-check_state(Nextstate,Value,Start,U,ag(A)):-
+check_state(_,_,Start,U,ag(_)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,ag(A)):-
-    not(member(Start, U)), %viktig rad
-    check_state(_,Value,Start,_,A),
+    not(member(Start,U)), %viktig rad (om man har två states som pekar mot varandra ex [s0, [s1]],[s1,[s0]], så kommer det bli en oändlig loop. därför kollar man om current node inte finns med i listan för att kunna fortsätta beviset.)
+    check_state(Nextstate,Value,Start,[],A),
     member([Start,NeighborList],Nextstate),
     acheck(Nextstate,Value,NeighborList,[Start|U],ag(A)).
 
-%AF
+%af
 check_state(Nextstate,Value,Start,U,af(A)):-
-    check_state(Nextstate,Value,Start,U,A).
-
+     not(member(Start,U)),
+    check_state(Nextstate,Value,Start,[],A).
 
 check_state(Nextstate,Value,Start,U,af(A)):-
+    not(member(Start,U)),
     member([Start,NeighborList],Nextstate),
     acheck(Nextstate,Value,NeighborList,[Start|U],af(A)).
 
 %eg rule
 %Basecase
-check_state(Nextstate,Value,Start,U,eg(A)):-
+check_state(_,_,Start,U,eg(_)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,eg(A)):-
-    check_state(_,Value,Start,_,A),
+   not(member(Start,U)),
+    check_state(Nextstate,Value,Start,[],A),
     member([Start,NeighborList],Nextstate),
     echeck(Nextstate,Value,NeighborList,[Start|U],eg(A)).
+%ef
+check_state(Nextstate,Value,Start,U,ef(A)):-
+   not(member(Start,U)),
+    check_state(Nextstate,Value,Start,[],A).
 
-
-
-
+check_state(Nextstate,Value,Start,U,ef(A)):-
+   not(member(Start,U)),
+    member([Start,NeighborList],Nextstate),
+    echeck(Nextstate,Value,NeighborList,[Start|U],ef(A)).
 
 %support metoder---------------------------
+%base
+acheck(_,_,[],_,_).
 acheck(Nextstate,Value,[H|T],U,Goal):-
    check_state(Nextstate,Value,H,U,Goal),
     acheck(Nextstate,Value,T,U,Goal).
-%basecase
-acheck(_,_,[],_,_).
 
-echeck(_,_,[],_,_).
 
 echeck(Nextstate,Value,[H|T],U,Goal):-
-    write(ec),
     check_state(Nextstate,Value,H,U,Goal);
     echeck(Nextstate,Value,T,U,Goal).
