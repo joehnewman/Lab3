@@ -38,7 +38,7 @@ check_state(Nextstate,Value,Start,[],ex(A)):-
 
 %ag rule
 %Basecase
-check_state(_,_,Start,U,ag(_)):-
+check_state(Nextstate,Value,Start,U,ag(A)):-
     member(Start,U).
 
 check_state(Nextstate,Value,Start,U,ag(A)):-

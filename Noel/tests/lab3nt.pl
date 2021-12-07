@@ -1,6 +1,6 @@
 verify(Input):-
     see(Input), read(Nextstate), read(Value), read(Start), read(Goal), seen,
-    check(Nextstate,Value,Start,[],Goal), !.
+    check(Nextstate,Value,Start,[],Goal).
 
 check(Nextstate,Value,Start,U,Goal):-
     check_state(Nextstate,Value,Start,U,Goal).
